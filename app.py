@@ -27,7 +27,7 @@ parser.add_argument('uid')
 parser.add_argument('status')
 parser.add_argument('code')
 
-blueprint = flask.Blueprint('main_api', __name__, template_folder='templates')
+blueprint = flask.Blueprint('app', __name__, template_folder='templates')
 
 
 def abort_if_users_not_found(user_id):
