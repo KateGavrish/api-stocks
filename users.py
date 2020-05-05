@@ -4,7 +4,7 @@ from sqlalchemy import orm
 from werkzeug.security import generate_password_hash, check_password_hash
 from sqlalchemy_serializer import SerializerMixin
 
-from .db_session import SqlAlchemyBase
+from db_session import SqlAlchemyBase
 
 
 class User(SqlAlchemyBase, UserMixin, SerializerMixin):
