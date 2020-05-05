@@ -5,3 +5,4 @@ uwsgi
 flask_login
 werkzeug
 sqlalchemy_serializer
+gunicorn
