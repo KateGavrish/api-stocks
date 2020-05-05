@@ -1,7 +1,6 @@
 Flask
 Flask-RESTful
 Flask-SQLAlchemy
-uwsgi
 flask_login
 werkzeug
 sqlalchemy_serializer
