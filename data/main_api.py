@@ -246,7 +246,3 @@ def main():
     api.add_resource(MailingUserResource, '/api/user-mailing-lists/<int:user_id>')
     app.register_blueprint(blueprint)
     app.run()
-
-
-if __name__ == '__main__':
-    main()
