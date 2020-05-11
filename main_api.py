@@ -2,13 +2,15 @@ import flask
 from flask import Flask, jsonify
 from flask_restful import reqparse, Api, Resource
 
-from users import User
-from db_session import *
-from selected_items import Items
-from mailing import MailingItems
+from api.data.users import User
+from api.data.db_session import *
+from api.data.selected_items import Items
+from api.data.mailing import MailingItems
+
+from os import getenv
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'yandexlyceum_secret_key'
+app.config['SECRET_KEY'] = getenv('SECRET_KEY')
 api = Api(app)
 
 parser = reqparse.RequestParser()
@@ -27,7 +29,7 @@ parser.add_argument('uid')
 parser.add_argument('status')
 parser.add_argument('code')
 
-blueprint = flask.Blueprint('app', __name__, template_folder='templates')
+blueprint = flask.Blueprint('main_api', __name__, template_folder='templates')
 
 
 def abort_if_users_not_found(user_id):
@@ -40,7 +42,7 @@ def abort_if_users_not_found(user_id):
 
 def abort_if_items_not_found(item_id):
     session = create_session()
-    user = session.query(User).get(item_id)
+    user = session.query(Items).get(item_id)
     if not user:
         return 'NO'
     return 'OK'
@@ -68,6 +70,19 @@ class UsersResource(Resource):
             session = create_session()
             user = session.query(User).get(user_id)
             session.delete(user)
+            session.commit()
+            return jsonify({'success': 'OK'})
+
+    def put(self, user_id):
+        a = abort_if_users_not_found(user_id)
+        if a == 'OK':
+            args = parser.parse_args()
+            session = create_session()
+            user = session.query(User).get(user_id)
+            user.name = args['name']
+            user.surname = args['surname']
+            user.email = args['email']
+            user.set_password(args['password'])
             session.commit()
             return jsonify({'success': 'OK'})
 
@@ -212,6 +227,8 @@ def user_login(email, password):
         return jsonify({'error': 'Not found'})
     if user.check_password(password):
         return jsonify({'users': user.to_dict(only=('name', 'surname', 'email', 'id', 'hashed_password'))})
+    else:
+        return jsonify({'error': 'Wrong password'})
 
 
 @blueprint.route('/api/users/load/<int:user_id>',  methods=['GET'])
@@ -235,13 +252,18 @@ def load_items(user_id):
         return jsonify({'error': 'Not found'})
 
 
-global_init("user_data.sqlite")
-api.add_resource(UsersListResource, '/api/users')
-api.add_resource(UsersResource, '/api/users/<int:user_id>')
-api.add_resource(ItemsListResource, '/api/items')
-api.add_resource(ItemsResource, '/api/items/<int:item_id>')
-api.add_resource(MailingListResource, '/api/mailing')
-api.add_resource(MailingResource, '/api/mailing/<int:id_>')
-api.add_resource(MailingUserResource, '/api/user-mailing-lists/<int:user_id>')
-app.register_blueprint(blueprint)
+def main():
+    global_init("../db/user_data.sqlite")
+    api.add_resource(UsersListResource, '/api/users')
+    api.add_resource(UsersResource, '/api/users/<int:user_id>')
+    api.add_resource(ItemsListResource, '/api/items')
+    api.add_resource(ItemsResource, '/api/items/<int:item_id>')
+    api.add_resource(MailingListResource, '/api/mailing')
+    api.add_resource(MailingResource, '/api/mailing/<int:id_>')
+    api.add_resource(MailingUserResource, '/api/user-mailing-lists/<int:user_id>')
+    app.register_blueprint(blueprint)
+    app.run()
 
+
+if __name__ == '__main__':
+    main()
