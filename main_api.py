@@ -252,18 +252,12 @@ def load_items(user_id):
         return jsonify({'error': 'Not found'})
 
 
-def main():
-    global_init("../db/user_data.sqlite")
-    api.add_resource(UsersListResource, '/api/users')
-    api.add_resource(UsersResource, '/api/users/<int:user_id>')
-    api.add_resource(ItemsListResource, '/api/items')
-    api.add_resource(ItemsResource, '/api/items/<int:item_id>')
-    api.add_resource(MailingListResource, '/api/mailing')
-    api.add_resource(MailingResource, '/api/mailing/<int:id_>')
-    api.add_resource(MailingUserResource, '/api/user-mailing-lists/<int:user_id>')
-    app.register_blueprint(blueprint)
-    app.run()
-
-
-if __name__ == '__main__':
-    main()
+global_init("user_data.sqlite")
+api.add_resource(UsersListResource, '/api/users')
+api.add_resource(UsersResource, '/api/users/<int:user_id>')
+api.add_resource(ItemsListResource, '/api/items')
+api.add_resource(ItemsResource, '/api/items/<int:item_id>')
+api.add_resource(MailingListResource, '/api/mailing')
+api.add_resource(MailingResource, '/api/mailing/<int:id_>')
+api.add_resource(MailingUserResource, '/api/user-mailing-lists/<int:user_id>')
+app.register_blueprint(blueprint)
