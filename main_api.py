@@ -2,10 +2,10 @@ import flask
 from flask import Flask, jsonify
 from flask_restful import reqparse, Api, Resource
 
-from api.data.users import User
-from api.data.db_session import *
-from api.data.selected_items import Items
-from api.data.mailing import MailingItems
+from users import User
+from db_session import *
+from selected_items import Items
+from mailing import MailingItems
 
 from os import getenv
 
